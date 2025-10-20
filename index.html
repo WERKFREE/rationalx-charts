@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RationalX · Charts</title>
+
+  <!-- D3 einmal laden -->
+  <script src="https://d3js.org/d3.v7.min.js" defer></script>
+
+  <link rel="stylesheet" href="style.css" />
+<style>
+  :root { --maxw: 1100px; }
+  body { 
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; 
+    margin: 24px; 
+    color:#222; 
+    line-height: 1.5;
+  }
+  h2 { 
+    margin: 48px 0 20px;   /* mehr Platz nach oben & unten */
+    font-weight: 700; 
+    font-size: 1.4rem;
+  }
+  .chart-wrap { max-width: var(--maxw); }
+  .chart-shell { 
+    padding: 24px 0 40px;  /* deutlich mehr Abstand nach oben & unten */
+    position: relative; 
+    border-bottom: 1px solid #eee; /* optional dezente Trennlinie */
+  }
+  .chart-shell:last-of-type {
+    border-bottom: none;   /* letzte ohne Linie */
+  }
+  /* ▼ Chart-Container */
+  #chart, #chart-productivity, #chart-g20survey, 
+  #chart-earnings, #chart-abgaben, #chart-investitionen {
+    width: 100%; 
+    max-width: var(--maxw);
+    margin: 0 auto;
+    display: block;
+  }
+  .chart-shell svg { overflow: visible; }
+</style>
+
+</head>
+<body>
+  <main class="chart-wrap" aria-label="Datenvisualisierungen">
+    <!-- 1) GDP PER CAPITA -->
+    <h2>G20 · BIP pro Kopf (1980 – 2024)</h2>
+    <div id="chart" class="chart-shell"></div>
+
+    <!-- 2) PRODUCTIVITY TRAJEKTORIEN -->
+    <h2>Arbeitsstunden vs. Produktivität · Trajektorien (1980 – 2024)</h2>
+    <div id="chart-productivity" class="chart-shell"></div>
+
+    <!-- 3) G20 SURVEY ANIMATION -->
+    <h2>Unsere Gesellschaft ist kaputt? · G20 Countries (2016 – 2023)</h2>
+    <div id="chart-g20survey" class="chart-shell"></div>
+
+    <!-- 4) REAL VS NOMINAL EARNINGS -->
+    <h2>Reale vs. nominale Verdienste & Verbraucherpreise</h2>
+    <div id="chart-earnings" class="chart-shell"></div>
+
+    <!-- 5) ABGABEN -->
+    <h2>Abgabenlast auf Arbeit · Deutschland</h2>
+    <div id="chart-abgaben" class="chart-shell"></div>
+
+    <!-- 6) INVESTITIONSQUOTE -->
+    <h2>Investitionsquote vs. Gesamtausgaben (animiert seit 1980)</h2>
+    <div id="chart-investitionen" class="chart-shell"></div>
+  </main>
+
+  <!-- Skripte -->
+  <script src="gdppercapita.js" defer></script>
+  <script src="productivity.js" defer></script>
+  <script src="g20_survey.js" defer></script>
+  <script src="earnings_chart.js" defer></script>
+  <script src="abgaben.js" defer></script>
+  <script src="investitionsquote.js" defer></script> <!-- ✅ Chart 6 eingebunden -->
+
+  <script>
+    window.addEventListener('load', () => {
+      console.log('Alle Scripts geladen, starte Charts...');
+      
+      // Chart 1: GDP
+      if (typeof drawLineChart === 'function') {
+        drawLineChart({
+          id: "chart",
+          dataFile: "Data/gdppercapita.csv",
+          startYear: 1980,
+          highlight: "Germany"
+        });
+      }
+
+      // Chart 2: Productivity
+      if (typeof drawBubbleChart === 'function') {
+        drawBubbleChart({
+          id: "chart-productivity",
+          dataFile: "Data/productivity.csv",
+          startYear: 1980,
+          endYear: 2024,
+          yMin: 1200,
+          yMax: 2800,
+          highlight: "Germany",
+          useLogX: false
+        });
+      }
+
+      // Chart 3: G20 Survey
+      if (typeof drawG20Survey === 'function') {
+        drawG20Survey({
+          id: "chart-g20survey",
+          dataFile: "Data/g20_survey.csv"
+        });
+      }
+
+      // Chart 4: Real vs Nominal Earnings
+      if (typeof drawEarningsChart === 'function') {
+        drawEarningsChart({
+          id: "chart-earnings",
+          dataFile: "Data/earnings.csv"
+        });
+      }
+
+      // Chart 5: Abgaben
+      if (typeof drawAbgabenChart === 'function') {
+        drawAbgabenChart({
+          id: "chart-abgaben"
+        });
+      }
+
+      // Chart 6: Investitionsquote animiert
+      if (typeof drawInvestScatter === 'function') {
+        drawInvestScatter({
+          id: "chart-investitionen",
+          investFile: "Data/GGFC.csv",
+          spendFile:  "Data/TGGE.csv",
+          filterAggregates: true,
+          intervalMs: 1200,
+          startYear: 1980
+        });
+
+      }
+
+    });
+  </script>
+</body>
+</html>
