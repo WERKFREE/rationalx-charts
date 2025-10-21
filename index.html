@@ -5,70 +5,84 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>RationalX · Charts</title>
 
-  <!-- D3 einmal laden -->
   <script src="https://d3js.org/d3.v7.min.js" defer></script>
-
   <link rel="stylesheet" href="style.css" />
-<style>
-  :root { --maxw: 1100px; }
-  body { 
-    font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; 
-    margin: 24px; 
-    color:#222; 
-    line-height: 1.5;
-  }
-  h2 { 
-    margin: 48px 0 20px;   /* mehr Platz nach oben & unten */
-    font-weight: 700; 
-    font-size: 1.4rem;
-  }
-  .chart-wrap { max-width: var(--maxw); }
-  .chart-shell { 
-    padding: 24px 0 40px;  /* deutlich mehr Abstand nach oben & unten */
-    position: relative; 
-    border-bottom: 1px solid #eee; /* optional dezente Trennlinie */
-  }
-  .chart-shell:last-of-type {
-    border-bottom: none;   /* letzte ohne Linie */
-  }
-  /* ▼ Chart-Container */
-  #chart, #chart-productivity, #chart-g20survey, 
-  #chart-earnings, #chart-abgaben, #chart-investitionen {
-    width: 100%; 
-    max-width: var(--maxw);
-    margin: 0 auto;
-    display: block;
-  }
-  .chart-shell svg { overflow: visible; }
-</style>
-
+  <style>
+    :root { --maxw: 1100px; }
+    body { 
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; 
+      margin: 24px; 
+      color:#222; 
+      line-height: 1.5;
+    }
+    h2 { 
+      margin: 32px 0 12px;
+      font-weight: 700; 
+      font-size: 1.3rem;
+    }
+    .chart-wrap { max-width: var(--maxw); }
+    .chart-shell { 
+      padding: 24px 0 40px;
+      position: relative; 
+      border-bottom: 1px solid #eee;
+    }
+    .chart-shell:last-of-type { border-bottom: none; }
+    button.start-btn {
+      display: inline-block;
+      margin-bottom: 12px;
+      padding: 6px 14px;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+    .chart-shell svg { overflow: visible; }
+  </style>
 </head>
 <body>
   <main class="chart-wrap" aria-label="Datenvisualisierungen">
+
     <!-- 1) GDP PER CAPITA -->
     <h2>G20 · BIP pro Kopf (1980 – 2024)</h2>
+    <button class="start-btn" onclick="startGDP()">▶ Start</button>
     <div id="chart" class="chart-shell"></div>
 
-    <!-- 2) PRODUCTIVITY TRAJEKTORIEN -->
-    <h2>Arbeitsstunden vs. Produktivität · Trajektorien (1980 – 2024)</h2>
+    <!-- 2) PRODUCTIVITY -->
+    <h2>Arbeitsstunden vs. Produktivität (1980 – 2024)</h2>
+    <button class="start-btn" onclick="startProductivity()">▶ Start</button>
     <div id="chart-productivity" class="chart-shell"></div>
 
-    <!-- 3) G20 SURVEY ANIMATION -->
-    <h2>Unsere Gesellschaft ist kaputt? · G20 Countries (2016 – 2023)</h2>
+    <!-- 3) G20 SURVEY -->
+    <h2>Unsere Gesellschaft ist kaputt? · G20 Countries</h2>
+    <button class="start-btn" onclick="startSurvey()">▶ Start</button>
     <div id="chart-g20survey" class="chart-shell"></div>
 
-    <!-- 4) REAL VS NOMINAL EARNINGS -->
-    <h2>Reale vs. nominale Verdienste & Verbraucherpreise</h2>
+    <!-- 4) REAL VS NOMINAL -->
+    <h2>Reale vs. nominale Verdienste</h2>
+    <button class="start-btn" onclick="startEarnings()">▶ Start</button>
     <div id="chart-earnings" class="chart-shell"></div>
 
     <!-- 5) ABGABEN -->
     <h2>Abgabenlast auf Arbeit · Deutschland</h2>
+    <button class="start-btn" onclick="startAbgaben()">▶ Start</button>
     <div id="chart-abgaben" class="chart-shell"></div>
 
     <!-- 6) INVESTITIONSQUOTE -->
-    <h2>Investitionsquote vs. Gesamtausgaben (animiert seit 1980)</h2>
+    <h2>Investitionsquote vs. Gesamtausgaben</h2>
+    <button class="start-btn" onclick="startInvestitionen()">▶ Start</button>
     <div id="chart-investitionen" class="chart-shell"></div>
+
+    <!-- 7) ZUFRIEDENHEIT -->
+    <h2>Zufriedenheit mit den Behörden</h2>
+    <button class="start-btn" onclick="startZufriedenheit()">▶ Start</button>
+    <div id="chart-zufriedenheit" class="chart-shell"></div>
+
+    <!-- 8) INVESTITIONSWELLE -->
+    <h2>Investitionsankündigungen</h2>
+    <button class="start-btn" onclick="startInvestWave()">▶ Start</button>
+    <div id="chart-invest" class="chart-shell"></div>
   </main>
+
+  <!-- Matrix Intro ganz unten -->
+  <div id="matrix-root"></div>
 
   <!-- Skripte -->
   <script src="gdppercapita.js" defer></script>
@@ -76,73 +90,19 @@
   <script src="g20_survey.js" defer></script>
   <script src="earnings_chart.js" defer></script>
   <script src="abgaben.js" defer></script>
-  <script src="investitionsquote.js" defer></script> <!-- ✅ Chart 6 eingebunden -->
+  <script src="investitionsquote.js" defer></script>
+  <script src="zufriedenheit.js" defer></script>
+  <script src="investment_wave.js" defer></script>
 
-  <script>
-    window.addEventListener('load', () => {
-      console.log('Alle Scripts geladen, starte Charts...');
-      
-      // Chart 1: GDP
-      if (typeof drawLineChart === 'function') {
-        drawLineChart({
-          id: "chart",
-          dataFile: "Data/gdppercapita.csv",
-          startYear: 1980,
-          highlight: "Germany"
-        });
-      }
+  <!-- React Bundle -->
+  <script src="bundle.js"></script>
+  <script type="module">
+    import MatrixIntro from './MatrixIntro.js';
+    import { createRoot } from 'react-dom/client';
 
-      // Chart 2: Productivity
-      if (typeof drawBubbleChart === 'function') {
-        drawBubbleChart({
-          id: "chart-productivity",
-          dataFile: "Data/productivity.csv",
-          startYear: 1980,
-          endYear: 2024,
-          yMin: 1200,
-          yMax: 2800,
-          highlight: "Germany",
-          useLogX: false
-        });
-      }
-
-      // Chart 3: G20 Survey
-      if (typeof drawG20Survey === 'function') {
-        drawG20Survey({
-          id: "chart-g20survey",
-          dataFile: "Data/g20_survey.csv"
-        });
-      }
-
-      // Chart 4: Real vs Nominal Earnings
-      if (typeof drawEarningsChart === 'function') {
-        drawEarningsChart({
-          id: "chart-earnings",
-          dataFile: "Data/earnings.csv"
-        });
-      }
-
-      // Chart 5: Abgaben
-      if (typeof drawAbgabenChart === 'function') {
-        drawAbgabenChart({
-          id: "chart-abgaben"
-        });
-      }
-
-      // Chart 6: Investitionsquote animiert
-      if (typeof drawInvestScatter === 'function') {
-        drawInvestScatter({
-          id: "chart-investitionen",
-          investFile: "Data/GGFC.csv",
-          spendFile:  "Data/TGGE.csv",
-          filterAggregates: true,
-          intervalMs: 1200,
-          startYear: 1980
-        });
-
-      }
-
-    });
+    const container = document.getElementById('matrix-root');
+    const root = createRoot(container);
+    root.render(<MatrixIntro />);
   </script>
 </body>
 </html>
